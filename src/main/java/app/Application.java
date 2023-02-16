@@ -23,6 +23,7 @@ public class Application implements Consumer<Event> {
         window.setEventListener(this);
         // делаем окно видимым
         window.setVisible(true);
+
     }
 
     /**
