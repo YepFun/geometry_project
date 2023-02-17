@@ -2,6 +2,7 @@ package app;
 
 import io.github.humbleui.jwm.*;
 import io.github.humbleui.jwm.skija.EventFrameSkija;
+import io.github.humbleui.skija.Surface;
 
 import java.io.File;
 import java.util.function.Consumer;
@@ -66,6 +67,7 @@ public class Application implements Consumer<Event> {
      *
      * @param e событие
      */
+
     @Override
     public void accept(Event e) {
         // если событие - это закрытие окна
@@ -74,6 +76,11 @@ public class Application implements Consumer<Event> {
             App.terminate();
         } else if (e instanceof EventWindowCloseRequest) {
             window.close();
+        }else if (e instanceof EventFrameSkija ee) {
+            // получаем поверхность рисования
+            Surface s = ee.getSurface();
+            // очищаем её канвас заданным цветом
+            s.getCanvas().clear(0xFF264653);
         }
     }
 }
