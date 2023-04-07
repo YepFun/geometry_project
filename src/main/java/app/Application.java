@@ -1,14 +1,10 @@
 package app;
 
-import controls.Label;
 import io.github.humbleui.jwm.*;
 import io.github.humbleui.jwm.skija.EventFrameSkija;
 import io.github.humbleui.skija.Canvas;
-import io.github.humbleui.skija.Paint;
-import io.github.humbleui.skija.RRect;
 import io.github.humbleui.skija.Surface;
 import misc.CoordinateSystem2i;
-import misc.Misc;
 import panels.PanelControl;
 import panels.PanelHelp;
 import panels.PanelLog;
@@ -17,8 +13,7 @@ import panels.PanelRendering;
 import java.io.File;
 import java.util.function.Consumer;
 
-import static app.Colors.APP_BACKGROUND_COLOR;
-import static app.Colors.PANEL_BACKGROUND_COLOR;
+import static app.Colors.*;
 
 /**
  * Класс окна приложения
@@ -29,14 +24,13 @@ public class Application implements Consumer<Event> {
      */
     private final Window window;
     /**
+     * отступ приложения
+     */
+    public static final int PANEL_PADDING = 5;
+    /**
      * радиус скругления элементов
      */
     public static final int C_RAD_IN_PX = 4;
-    /**
-     * отступы панелей
-     */
-    public static final int PANEL_PADDING = 5;
-
     /**
      * панель легенды
      */
@@ -53,10 +47,6 @@ public class Application implements Consumer<Event> {
      * панель событий
      */
     private final PanelLog panelLog;
-    /**
-     * Представление проблемы
-     */
-    public static Task task;
 
 
     /**
@@ -65,6 +55,7 @@ public class Application implements Consumer<Event> {
     public Application() {
         // создаём окно
         window = App.makeWindow();
+
         // создаём панель рисования
         panelRendering = new PanelRendering(
                 window, true, PANEL_BACKGROUND_COLOR, PANEL_PADDING, 5, 3, 0, 0,
@@ -85,6 +76,7 @@ public class Application implements Consumer<Event> {
                 window, true, PANEL_BACKGROUND_COLOR, PANEL_PADDING, 5, 3, 3, 2,
                 2, 1
         );
+
         // задаём обработчиком событий текущий объект
         window.setEventListener(this);
         // задаём заголовок
@@ -94,11 +86,11 @@ public class Application implements Consumer<Event> {
         // задаём его положение
         window.setWindowPosition(100, 100);
         // задаём иконку
-
         switch (Platform.CURRENT) {
             case WINDOWS -> window.setIcon(new File("src/main/resources/windows.ico"));
             case MACOS -> window.setIcon(new File("src/main/resources/macos.icns"));
         }
+
 
         // названия слоёв, которые будем перебирать
         String[] layerNames = new String[]{
@@ -123,7 +115,29 @@ public class Application implements Consumer<Event> {
 
         // делаем окно видимым
         window.setVisible(true);
+    }
 
+    /**
+     * Обработчик событий
+     *
+     * @param e событие
+     */
+    @Override
+    public void accept(Event e) {
+        // если событие - это закрытие окна
+        if (e instanceof EventWindowClose) {
+            // завершаем работу приложения
+            App.terminate();
+        } else if (e instanceof EventWindowCloseRequest) {
+            window.close();
+        } else if (e instanceof EventFrameSkija ee) {
+            Surface s = ee.getSurface();
+            paint(s.getCanvas(), new CoordinateSystem2i(0, 0, s.getWidth(), s.getHeight())
+            );
+        }
+        panelControl.accept(e);
+        panelRendering.accept(e);
+        panelLog.accept(e);
     }
 
     /**
@@ -143,26 +157,5 @@ public class Application implements Consumer<Event> {
         panelLog.paint(canvas, windowCS);
         panelHelp.paint(canvas, windowCS);
         canvas.restore();
-    }
-    /**
-     * Обработчик событий
-     *
-     * @param e событие
-     */
-
-    @Override
-    public void accept(Event e) {
-        // если событие - это закрытие окна
-        if (e instanceof EventWindowClose) {
-            // завершаем работу приложения
-            App.terminate();
-        } else if (e instanceof EventWindowCloseRequest) {
-            window.close();
-        }else if (e instanceof EventFrameSkija ee) {
-            // получаем поверхность рисования
-            Surface s = ee.getSurface();
-            // очищаем её канвас заданным цветом
-            paint(s.getCanvas(), new CoordinateSystem2i(s.getWidth(), s.getHeight()));
-        }
     }
 }
