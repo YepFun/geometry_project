@@ -1,10 +1,14 @@
 package panels;
 
 import app.Task;
+import controls.Input;
+import controls.InputFactory;
+import controls.Label;
 import controls.MultiLineLabel;
 import io.github.humbleui.jwm.*;
 import io.github.humbleui.skija.Canvas;
 import misc.CoordinateSystem2i;
+import misc.Misc;
 
 import static app.Application.PANEL_PADDING;
 /**
@@ -15,6 +19,22 @@ public class PanelControl extends GridPanel {
      * Текст задания
      */
     MultiLineLabel task;
+    /**
+     * Цвет подложки поля ввода
+     */
+    public static final int FIELD_BACKGROUND_COLOR = Misc.getColor(255, 255, 255, 255);
+    /**
+     * Цвет текста
+     */
+    public static final int FIELD_TEXT_COLOR = Misc.getColor(255, 0, 0, 0);
+    /**
+     * заголовок для поля ввода x координаты
+     */
+    Label xLabel;
+    /**
+     * поле ввода x координаты
+     */
+    Input xField;
 
     /**
      * Панель управления
@@ -42,17 +62,14 @@ public class PanelControl extends GridPanel {
                 6, 7, 0, 0, 6, 2, Task.TASK_TEXT,
                 false, true);
 
-    }
+        // добавление вручную
+        xLabel = new Label(window, false, backgroundColor, PANEL_PADDING,
+                6, 7, 0, 2, 1, 1, "X", true, true);
 
-    /**
-     * Обработчик событий
-     *
-     * @param e событие
-     */
-    @Override
-    public void accept(Event e) {
-        // вызываем обработчик предка
-        super.accept(e);
+        xField = InputFactory.getInput(window, false, FIELD_BACKGROUND_COLOR, PANEL_PADDING,
+                6, 7, 1, 2, 2, 1, "0.0", true,
+                FIELD_TEXT_COLOR);
+
     }
 
     /**
@@ -64,5 +81,20 @@ public class PanelControl extends GridPanel {
     @Override
     public void paintImpl(Canvas canvas, CoordinateSystem2i windowCS) {
         task.paint(canvas, windowCS);
+        xLabel.paint(canvas, windowCS);
+        xField.paint(canvas, windowCS);
+    }
+
+    /**
+     * Обработчик событий
+     *
+     * @param e событие
+     */
+    @Override
+    public void accept(Event e) {
+        // вызываем обработчик предка
+        super.accept(e);
+        // передаём обработку полю ввода X
+        xField.accept(e);
     }
 }
