@@ -1,6 +1,6 @@
-
 package panels;
 
+import controls.Label;
 import io.github.humbleui.jwm.Event;
 import io.github.humbleui.jwm.Window;
 import io.github.humbleui.skija.Canvas;
@@ -18,7 +18,6 @@ import java.util.List;
 import static app.Application.PANEL_PADDING;
 import static app.Colors.PANEL_BACKGROUND_COLOR;
 import static app.Fonts.FONT12;
-import static java.awt.SystemColor.text;
 
 /**
  * Панель управления
@@ -29,31 +28,13 @@ public class PanelLog extends GridPanel {
      */
     private static final int LOG_LINES_CNT = 15;
     /**
-     * Список записей лога
-     */
-    private static final List<Record> logs = new ArrayList<>();
-    /**
      * Максимальная длина строки лога
      */
     private static final int MAX_LOG_LINE_LENGTH = 80;
-
     /**
-     * Конструктор панели
-     *
-     * @param window          окно
-     * @param drawBG          нужно ли рисовать подложку
-     * @param backgroundColor цвет фона
-     * @param padding         отступы
-     * @param gridWidth       кол-во ячеек сетки по ширине
-     * @param gridHeight      кол-во ячеек сетки по высоте
-     * @param gridX           координата в сетке x
-     * @param gridY           координата в сетке y
-     * @param colspan         кол-во колонок, занимаемых панелью
-     * @param rowspan         кол-во строк, занимаемых панелью
+     * Список записей лога
      */
-    public PanelLog(Window window, boolean drawBG, int backgroundColor, int padding, int gridWidth, int gridHeight, int gridX, int gridY, int colspan, int rowspan) {
-        super(window, drawBG, backgroundColor, padding, gridWidth, gridHeight, gridX, gridY, colspan, rowspan);
-    }
+    private static final List<Record> logs = new ArrayList<>();
 
     /**
      * Тип записи
@@ -92,6 +73,7 @@ public class PanelLog extends GridPanel {
         }
     }
 
+
     /**
      * Панель управления
      *
@@ -106,23 +88,29 @@ public class PanelLog extends GridPanel {
      * @param colspan    кол-во колонок, занимаемых панелью
      * @param rowspan    кол-во строк, занимаемых панелью
      */
-
-    /**
-     * Обработчик событий
-     *
-     * @param e событие
-     */
-    @Override
-    public void accept(Event e) {
+    public PanelLog(
+            Window window, boolean drawBG, int color, int padding, int gridWidth, int gridHeight,
+            int gridX, int gridY, int colspan, int rowspan
+    ) {
+        super(window, drawBG, color, padding, gridWidth, gridHeight, gridX, gridY, colspan, rowspan);
 
     }
 
     /**
-     * Метод под рисование в конкретной реализации
+     * Получить цвет строки лога
      *
-     * @param canvas   область рисования
-     * @param windowCS СК окна
+     * @param recordType тип записи
+     * @return цвет строки лога
      */
+    public static int getColor(RecordType recordType) {
+        return switch (recordType) {
+            case INFO -> Misc.getColor(144, 255, 255, 255);
+            case WARNING -> Misc.getColor(144, 255, 255, 0);
+            case ERROR -> Misc.getColor(144, 255, 0, 0);
+            case SUCCESS -> Misc.getColor(144, 0, 255, 0);
+        };
+    }
+
 
     /**
      * Добавить в лога
@@ -139,6 +127,7 @@ public class PanelLog extends GridPanel {
             }
         }
     }
+
     /**
      * Добавить info запись
      *
@@ -174,20 +163,7 @@ public class PanelLog extends GridPanel {
     public static void error(String text) {
         addToLog(RecordType.ERROR, text);
     }
-    /**
-     * Получить цвет строки лога
-     *
-     * @param recordType тип записи
-     * @return цвет строки лога
-     */
-    public static int getColor(RecordType recordType) {
-        return switch (recordType) {
-            case INFO -> Misc.getColor(144, 255, 255, 255);
-            case WARNING -> Misc.getColor(144, 255, 255, 0);
-            case ERROR -> Misc.getColor(144, 255, 0, 0);
-            case SUCCESS -> Misc.getColor(144, 0, 255, 0);
-        };
-    }
+
     /**
      * Метод под рисование в конкретной реализации
      *
@@ -217,7 +193,6 @@ public class PanelLog extends GridPanel {
             }
             // восстанавливаем область рисования
             canvas.restore();
-
         }
     }
 }
