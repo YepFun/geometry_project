@@ -344,5 +344,30 @@ public class Task {
         ownCS.scale(1 + delta * WHEEL_SENSITIVE, realCenter);
     }
 
-
+    /**
+     * Рисование курсора мыши
+     *
+     * @param canvas   область рисования
+     * @param windowCS СК окна
+     * @param font     шрифт
+     * @param pos      положение курсора мыши
+     */
+    public void paintMouse(Canvas canvas, CoordinateSystem2i windowCS, Font font, Vector2i pos) {
+        // создаём перо
+        try (var paint = new Paint().setColor(TASK_GRID_COLOR)) {
+            // сохраняем область рисования
+            canvas.save();
+            // рисуем перекрестие
+            canvas.drawRect(Rect.makeXYWH(0, pos.y - 1, windowCS.getSize().x, 2), paint);
+            canvas.drawRect(Rect.makeXYWH(pos.x - 1, 0, 2, windowCS.getSize().y), paint);
+            // смещаемся немного для красивого вывода текста
+            canvas.translate(pos.x + 3, pos.y - 5);
+            // положение курсора в пространстве задачи
+            Vector2d realPos = getRealPos(pos.x, pos.y, lastWindowCS);
+            // выводим координаты
+            canvas.drawString(realPos.toString(), 0, 0, font, paint);
+            // восстанавливаем область рисования
+            canvas.restore();
+        }
+    }
 }

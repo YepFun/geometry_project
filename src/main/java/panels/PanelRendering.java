@@ -15,6 +15,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import static app.Fonts.FONT12;
 
 /**
  * Панель рисования
@@ -91,6 +92,8 @@ public class PanelRendering extends GridPanel {
     @Override
     public void paintImpl(Canvas canvas, CoordinateSystem2i windowCS) {
         task.paint(canvas, windowCS);
+        if (lastInside && lastMove != null)
+            task.paintMouse(canvas, windowCS, FONT12, lastWindowCS.getRelativePos(lastMove));
     }
 
     /**
