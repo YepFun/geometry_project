@@ -51,6 +51,10 @@ public class Colors {
      */
     public static final int SUBTRACTED_COLOR = Misc.getColor(200, 255, 255, 0);
     /**
+     * Цвет сетки
+     */
+    public static final int TASK_GRID_COLOR = Misc.getColor(64, 255, 255, 255);
+    /**
      * Обработчик событий
      *
      * @param e событие

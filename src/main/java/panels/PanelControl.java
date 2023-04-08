@@ -187,6 +187,8 @@ public class PanelControl extends GridPanel {
             window.requestFrame();
         });
         buttons.add(solve);
+
+
     }
 
     /**
