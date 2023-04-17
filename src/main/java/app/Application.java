@@ -8,10 +8,8 @@ import io.github.humbleui.jwm.skija.EventFrameSkija;
 import io.github.humbleui.skija.Canvas;
 import io.github.humbleui.skija.Surface;
 import misc.CoordinateSystem2i;
-import panels.PanelControl;
-import panels.PanelHelp;
-import panels.PanelLog;
-import panels.PanelRendering;
+import misc.Misc;
+import panels.*;
 
 import java.io.File;
 import java.util.function.Consumer;
@@ -54,6 +52,10 @@ public class Application implements Consumer<Event> {
      * кнопка изменений: у мака - это `Command`, у windows - `Ctrl`
      */
     public static final KeyModifier MODIFIER = Platform.CURRENT == Platform.MACOS ? KeyModifier.MAC_COMMAND : KeyModifier.CONTROL;
+    /**
+     * Панель информации
+     */
+    private final PanelPrimitives panelPrimitives;
 
     private boolean maximizedWindow;
 
@@ -94,6 +96,9 @@ public class Application implements Consumer<Event> {
     public Application() {
         // создаём окно
         window = App.makeWindow();
+
+        // панель игры
+        panelPrimitives = new PanelPrimitives(window, false, APP_BACKGROUND_COLOR, PANEL_PADDING);
 
         // создаём панель рисования
         panelRendering = new PanelRendering(
@@ -172,6 +177,7 @@ public class Application implements Consumer<Event> {
         // очищаем канвас
         canvas.clear(APP_BACKGROUND_COLOR);
         // рисуем панели
+        panelPrimitives.paint(canvas, windowCS);
         panelRendering.paint(canvas, windowCS);
         panelControl.paint(canvas, windowCS);
         panelLog.paint(canvas, windowCS);
@@ -184,6 +190,7 @@ public class Application implements Consumer<Event> {
         canvas.restore();
     }
 
+
     /**
      * Обработчик событий
      *
@@ -191,6 +198,8 @@ public class Application implements Consumer<Event> {
      */
     @Override
     public void accept(Event e) {
+        // запускаем обработку событий у панели примитивов
+        panelPrimitives.accept(e);
         // если событие - это закрытие окна
         if (e instanceof EventWindowClose) {
             // завершаем работу приложения
@@ -264,6 +273,5 @@ public class Application implements Consumer<Event> {
             }
         }
     }
-
 
 }
