@@ -110,6 +110,21 @@ public class Task {
         canvas.save();
         // создаём перо
         try (var paint = new Paint()) {
+
+            // левая верхняя вершина
+            Vector2i pointA = new Vector2i(200, 100);
+            // правая нижняя
+            Vector2i pointC = new Vector2i(300, 500);
+
+            // рассчитываем опорные точки прямоугольника
+            Vector2i pointB = new Vector2i(pointA.x, pointC.y);
+            Vector2i pointD = new Vector2i(pointC.x, pointA.y);
+
+            // рисуем его стороны
+            canvas.drawLine(pointA.x, pointA.y, pointB.x, pointB.y, paint);
+            canvas.drawLine(pointB.x, pointB.y, pointC.x, pointC.y, paint);
+            canvas.drawLine(pointC.x, pointC.y, pointD.x, pointD.y, paint);
+            canvas.drawLine(pointD.x, pointD.y, pointA.x, pointA.y, paint);
             for (Point p : points) {
                 if (!solved) {
                     paint.setColor(p.getColor());
