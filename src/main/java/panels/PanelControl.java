@@ -213,11 +213,12 @@ public class PanelControl extends GridPanel {
                     button.checkOver(lastWindowCS.getRelativePos(new Vector2i(ee)));
             }
             // событие нажатия мыши
-        } else if (e instanceof EventMouseButton) {
-            if (!lastInside)
+        } else if (e instanceof EventMouseButton ee) {
+            if (!lastInside || !ee.isPressed())
                 return;
 
             Vector2i relPos = lastWindowCS.getRelativePos(lastMove);
+
 
             // пробуем кликнуть по всем кнопкам
             for (Button button : buttons) {
