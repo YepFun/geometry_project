@@ -27,9 +27,14 @@ public class Task {
      */
     public static final String TASK_TEXT = """
             ПОСТАНОВКА ЗАДАЧИ:
-            Заданы два множества точек в вещественном
-            пространстве. Требуется построить пересечение
-            и разность этих множеств""";
+            На плоскости задано два множества "параллельных" 
+            прямоугольников. Найти "пересечение" множеств. 
+            То есть, все такие точки плоскости, которые лежат 
+            внутри хотя бы одного прямоугольника первого 
+            множества, и внутри хотя бы одного прямоугольника 
+            второго множества. 
+            Отобразить найденное множество (желательно,
+             "заливкой").""";
 
 
     /**
@@ -384,5 +389,19 @@ public class Task {
             // восстанавливаем область рисования
             canvas.restore();
         }
+    }
+
+    /**
+     * Добавить параллельный прямоугольник
+     *
+     * @param pos1      положение первой точки
+     * @param pos2      положение второй точки
+     * @param pointSet1 множество
+     * @param pointSet2 множество
+     */
+    public void addParallelRectangle(Vector2d pos1, Point.PointSet pointSet1, Vector2d pos2, Point.PointSet pointSet2) {
+        Point newPoint1 = new Point(pos1, pointSet1);
+        Point newPoint2 = new Point(pos2, pointSet2);
+        points.add(newPoint1);
     }
 }
