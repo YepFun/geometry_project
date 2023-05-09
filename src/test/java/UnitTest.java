@@ -23,7 +23,6 @@ public class UnitTest {
         Rectangle r2 = new Rectangle(new Vector2d(1,0), new Vector2d(1,-1));
 
         assert r1.checkcross(r2);
-
     }
     /**
      * Второй тест
@@ -78,6 +77,4 @@ public class UnitTest {
         assert r1.checkcross(r2);
         assert r2.checkcross(r1);
     }
-
-
 }

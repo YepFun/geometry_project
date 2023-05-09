@@ -40,14 +40,13 @@ public class Rectangle {
             return true;
         if (o == null || getClass() != o.getClass())
             return false;
-        Rectangle circle = (Rectangle) o;
-        return Objects.equals(posA, circle.posA) && Objects.equals(posB, circle.posB);
+        Rectangle rectangle = (Rectangle) o;
+        return Objects.equals(posA, rectangle.posA) && Objects.equals(posB, rectangle.posB);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(posA, posB);
     }
-
 
 }
