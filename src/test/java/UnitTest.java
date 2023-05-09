@@ -23,16 +23,60 @@ public class UnitTest {
         Rectangle r2 = new Rectangle(new Vector2d(1,0), new Vector2d(1,-1));
 
         assert r1.checkcross(r2);
+
     }
     /**
-     * Первый тест
+     * Второй тест
      */
     @Test
-    public void tes1() {
-        Rectangle r1 = new Rectangle(new Vector2d(0,0), new Vector2d(1,4));
-        Rectangle r2 = new Rectangle(new Vector2d(1,0), new Vector2d(1,-1));
+    public void test2() {
+        Rectangle r1 = new Rectangle(new Vector2d(-1,-1), new Vector2d(2,1));
+        Rectangle r2 = new Rectangle(new Vector2d(-1,-1), new Vector2d(2,1));
+
+        assert r1.checkcross(r2);
+    }
+    /**
+     * Третий тест
+     */
+    @Test
+    public void test3() {
+        Rectangle r1 = new Rectangle(new Vector2d(-1,-1), new Vector2d(2,1));
+        Rectangle r2 = new Rectangle(new Vector2d(-1,1), new Vector2d(2,-1));
+
+        assert r1.checkcross(r2);
+    }
+    /**
+     * Четвертый тест
+     */
+    @Test
+    public void test4() {
+        Rectangle r1 = new Rectangle(new Vector2d(-5,-4), new Vector2d(1,5));
+        Rectangle r2 = new Rectangle(new Vector2d(7,5), new Vector2d(7,5));
 
         assert !r1.checkcross(r2);
+        assert !r2.checkcross(r1);
+    }
+    /**
+     * Пятый тест
+     */
+    @Test
+    public void test5() {
+        Rectangle r1 = new Rectangle(new Vector2d(0,0), new Vector2d(0,0));
+        Rectangle r2 = new Rectangle(new Vector2d(0,0), new Vector2d(0,0));
+
+        assert r1.checkcross(r2);
+    }
+
+    /**
+     * Шестой тест
+     */
+    @Test
+    public void test6() {
+        Rectangle r1 = new Rectangle(new Vector2d(-7,-7), new Vector2d(7,7));
+        Rectangle r2 = new Rectangle(new Vector2d(-5,-5), new Vector2d(5,5));
+
+        assert r1.checkcross(r2);
+        assert r2.checkcross(r1);
     }
 
 

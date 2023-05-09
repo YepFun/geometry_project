@@ -14,14 +14,18 @@ public class Rectangle {
     @Getter
     private final Vector2d posB;
 
-   public boolean checkcross ( Rectangle b) {
-       Rectangle a = this;
+   public boolean checkcross (Rectangle b) {
         // a.posA.x - точка
-        if ((a.posA.x >= min(b.posA.x, b.posB.x)) && (a.posA.x <= max(b.posA.x, b.posB.x)) && (a.posA.y >= min(b.posA.y, b.posB.y)) && (a.posA.x <= max(b.posA.y, b.posB.y))) {
+        if ((this.posA.x >= min(b.posA.x, b.posB.x)) && (this.posA.x <= max(b.posA.x, b.posB.x)) && (this.posA.y >= min(b.posA.y, b.posB.y)) && (this.posA.x <= max(b.posA.y, b.posB.y))) {
             return true;
         }
-        if ((a.posB.x >= min(b.posA.x, b.posB.x)) && (a.posB.x <= max(b.posA.x, b.posB.x)) && (a.posB.y >= min(b.posA.y, b.posB.y)) && (a.posB.x <= max(b.posA.y, b.posB.y)))
+        if ((this.posB.x >= min(b.posA.x, b.posB.x)) && (this.posB.x <= max(b.posA.x, b.posB.x)) && (this.posB.y >= min(b.posA.y, b.posB.y)) && (this.posB.x <= max(b.posA.y, b.posB.y)))
             return true;
+       if ((b.posA.x >= min(this.posA.x, this.posB.x)) && (b.posA.x <= max(this.posA.x, this.posB.x)) && (b.posA.y >= min(this.posA.y, this.posB.y)) && (b.posA.x <= max(this.posA.y, this.posB.y))) {
+           return true;
+       }
+       if ((b.posB.x >= min(this.posA.x, this.posB.x)) && (b.posB.x <= max(this.posA.x, this.posB.x)) && (b.posB.y >= min(this.posA.y, this.posB.y)) && (b.posB.x <= max(this.posA.y, this.posB.y)))
+           return true;
         return false;
     };
 
