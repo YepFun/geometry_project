@@ -141,7 +141,14 @@ public class Task {
         if (taskPosA==null){
             taskPosA = taskPos;
         }else{
-            addRectangle(taskPosA, taskPos, Rectangle.RectangleSet.FIRST_SET);
+            // если левая кнопка мыши, добавляем в первое множество
+            if (mouseButton.equals(MouseButton.PRIMARY)) {
+                addRectangle(taskPosA, taskPos, Rectangle.RectangleSet.FIRST_SET);
+                // если правая, то во второе
+            } else if (mouseButton.equals(MouseButton.SECONDARY)) {
+                addRectangle(taskPosA, taskPos, Rectangle.RectangleSet.SECOND_SET);
+            }
+
             taskPosA = null;
         }
     }
