@@ -1,6 +1,12 @@
 package app;
 
-import lombok.Getter;import misc.Vector2d;
+import io.github.humbleui.skija.Canvas;
+import io.github.humbleui.skija.Paint;
+import lombok.Getter;
+import misc.CoordinateSystem2d;
+import misc.CoordinateSystem2i;
+import misc.Vector2d;
+import misc.Vector2i;
 import org.w3c.dom.css.Rect;
 
 import java.util.Objects;
@@ -9,6 +15,57 @@ import static java.lang.Math.max;
 import static java.lang.Math.min;
 
 public class Rectangle {
+    public void paint(Canvas canvas, CoordinateSystem2i windowCS, CoordinateSystem2d ownCS) {
+        try (Paint p = new Paint()) {
+            // левая верхняя вершина
+            Vector2i pointA = new Vector2i(200, 100);
+            // правая нижняя
+            Vector2i pointC = new Vector2i(300, 500);
+
+            // рассчитываем опорные точки прямоугольника
+            Vector2i pointB = new Vector2i(pointA.x, pointC.y);
+            Vector2i pointD = new Vector2i(pointC.x, pointA.y);
+
+            // рисуем его стороны
+            canvas.drawLine(pointA.x, pointA.y, pointB.x, pointB.y, p);
+            canvas.drawLine(pointB.x, pointB.y, pointC.x, pointC.y, p);
+            canvas.drawLine(pointC.x, pointC.y, pointD.x, pointD.y, p);
+            canvas.drawLine(pointD.x, pointD.y, pointA.x, pointA.y, p);
+        }
+    }
+
+    /**
+     * Множества
+     */
+    public enum RectangleSet {
+        /**
+         * Первое
+         */
+        FIRST_SET,
+        /**
+         * Второе
+         */
+        SECOND_SET
+    }
+
+    /**
+     * Множество, которому принадлежит прямоугольник
+     */
+    protected final RectangleSet rectangleSet;
+
+    /**
+     * Конструктор прямоугольника
+     *
+     * @param posA     положение прямоугольника
+     * @param posB     положение прямоугольника
+     * @param setType множество, которому она принадлежит
+     */
+    public Rectangle(Vector2d posA, Vector2d posB, RectangleSet setType) {
+        this.posA = posA;
+        this.posB = posB;
+        this.rectangleSet = setType;
+    }
+
     @Getter
     private final Vector2d posA;
     @Getter
@@ -28,11 +85,6 @@ public class Rectangle {
            return true;
         return false;
     };
-
-    public Rectangle (Vector2d posA, Vector2d posB) {
-        this.posA = posA;
-        this.posB = posB;
-    }
 
     @Override
     public boolean equals(Object o) {

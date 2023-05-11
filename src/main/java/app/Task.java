@@ -49,13 +49,9 @@ public class Task {
     /**
      * Список точек
      */
-    private final ArrayList<Point> points;
+    private final ArrayList<Rectangle> rectangles;
     /**
      * Размер точки
-     */
-    private static final int POINT_SIZE = 3;
-    /**
-     * Последняя СК окна
      */
     private CoordinateSystem2i lastWindowCS;
     /**
@@ -65,11 +61,7 @@ public class Task {
     /**
      * Список точек в пересечении
      */
-    private final ArrayList<Point> crossed;
-    /**
-     * Список точек в разности
-     */
-    private final ArrayList<Point> single;
+    private final ArrayList<Rectangle> crossed;
     /**
      * Порядок разделителя сетки, т.е. раз в сколько отсечек
      * будет нарисована увеличенная
@@ -80,16 +72,31 @@ public class Task {
      * Задача
      *
      * @param ownCS  СК задачи
-     * @param points массив точек
+     * @param rectangles массив прямоугольников
      */
     @JsonCreator
-    public Task(@JsonProperty("ownCS") CoordinateSystem2d ownCS, @JsonProperty("points") ArrayList<Point> points) {
+    public Task(@JsonProperty("ownCS") CoordinateSystem2d ownCS, @JsonProperty("rectangles") ArrayList<Rectangle> rectangles) {
         this.ownCS = ownCS;
-        this.points = points;
+        this.rectangles = rectangles;
         this.crossed = new ArrayList<>();
-        this.single = new ArrayList<>();
     }
 
+    /**
+     * Рисование задачи
+     *
+     * @param canvas   область рисования
+     * @param windowCS СК окна
+     */
+    private void renderTask(Canvas canvas, CoordinateSystem2i windowCS) {
+        canvas.save();
+        // создаём перо
+        try (var paint = new Paint()) {
+            for (Rectangle p : rectangles) {
+                p.paint(canvas, windowCS, ownCS);
+            }
+        }
+        canvas.restore();
+    }
     /**
      * Рисование
      *
@@ -105,64 +112,22 @@ public class Task {
         renderTask(canvas, windowCS);
     }
 
-    /**
-     * Рисование задачи
-     *
-     * @param canvas   область рисования
-     * @param windowCS СК окна
-     */
-    private void renderTask(Canvas canvas, CoordinateSystem2i windowCS) {
-        canvas.save();
-        // создаём перо
-        try (var paint = new Paint()) {
-
-            // левая верхняя вершина
-            Vector2i pointA = new Vector2i(200, 100);
-            // правая нижняя
-            Vector2i pointC = new Vector2i(300, 500);
-
-            // рассчитываем опорные точки прямоугольника
-            Vector2i pointB = new Vector2i(pointA.x, pointC.y);
-            Vector2i pointD = new Vector2i(pointC.x, pointA.y);
-
-            // рисуем его стороны
-            canvas.drawLine(pointA.x, pointA.y, pointB.x, pointB.y, paint);
-            canvas.drawLine(pointB.x, pointB.y, pointC.x, pointC.y, paint);
-            canvas.drawLine(pointC.x, pointC.y, pointD.x, pointD.y, paint);
-            canvas.drawLine(pointD.x, pointD.y, pointA.x, pointA.y, paint);
-            for (Point p : points) {
-                if (!solved) {
-                    paint.setColor(p.getColor());
-                } else {
-                    if (crossed.contains(p))
-                        paint.setColor(CROSSED_COLOR);
-                    else
-                        paint.setColor(SUBTRACTED_COLOR);
-                }
-                // y-координату разворачиваем, потому что у СК окна ось y направлена вниз,
-                // а в классическом представлении - вверх
-                Vector2i windowPos = windowCS.getCoords(p.pos.x, p.pos.y, ownCS);
-                // рисуем точку
-                canvas.drawRect(Rect.makeXYWH(windowPos.x - POINT_SIZE, windowPos.y - POINT_SIZE, POINT_SIZE * 2, POINT_SIZE * 2), paint);
-            }
-        }
-        canvas.restore();
-    }
 
     /**
-     * Добавить точку
+     * Добавить параллельный прямоугольник
      *
-     * @param pos      положение
-     * @param pointSet множество
+     * @param posA      положение
+     * @param posB      положение
+     * @param rectangleSet множество
      */
-    public void addPoint(Vector2d pos, Point.PointSet pointSet) {
+    public void addRectangle (Vector2d posA, Vector2d posB, Rectangle.RectangleSet rectangleSet) {
         solved = false;
-        Point newPoint = new Point(pos, pointSet);
-        points.add(newPoint);
-        PanelLog.info("точка " + newPoint + " добавлена в " + newPoint.getSetName());
+        Rectangle newRectangle = new Rectangle(posA, posB, rectangleSet);
+        rectangles.add(newRectangle);
+        PanelLog.info("прямоугольник " + newRectangle + " добавлена");
     }
 
-
+    Vector2d taskPosA;
     /**
      * Клик мыши по пространству задачи
      *
@@ -173,32 +138,32 @@ public class Task {
         if (lastWindowCS == null) return;
         // получаем положение на экране
         Vector2d taskPos = ownCS.getCoords(pos, lastWindowCS);
-        // если левая кнопка мыши, добавляем в первое множество
-        if (mouseButton.equals(MouseButton.PRIMARY)) {
-            addPoint(taskPos, Point.PointSet.FIRST_SET);
-            // если правая, то во второе
-        } else if (mouseButton.equals(MouseButton.SECONDARY)) {
-            addPoint(taskPos, Point.PointSet.SECOND_SET);
+        if (taskPosA==null){
+            taskPosA = taskPos;
+        }else{
+            addRectangle(taskPosA, taskPos, Rectangle.RectangleSet.FIRST_SET);
+            taskPosA = null;
         }
     }
-
 
     /**
      * Добавить случайные точки
      *
      * @param cnt кол-во случайных точек
      */
-    public void addRandomPoints(int cnt) {
+    public void addRandomRectangles(int cnt) {
         CoordinateSystem2i addGrid = new CoordinateSystem2i(30, 30);
 
         for (int i = 0; i < cnt; i++) {
             Vector2i gridPos = addGrid.getRandomCoords();
-            Vector2d pos = ownCS.getCoords(gridPos, addGrid);
+            Vector2d posA = ownCS.getCoords(gridPos, addGrid);
+            gridPos = addGrid.getRandomCoords();
+            Vector2d posB = ownCS.getCoords(gridPos, addGrid);
             // сработает примерно в половине случаев
             if (ThreadLocalRandom.current().nextBoolean())
-                addPoint(pos, Point.PointSet.FIRST_SET);
+                addRectangle(posA, posB, Rectangle.RectangleSet.FIRST_SET);
             else
-                addPoint(pos, Point.PointSet.SECOND_SET);
+                addRectangle(posA, posB, Rectangle.RectangleSet.SECOND_SET);
         }
     }
 
@@ -246,7 +211,7 @@ public class Task {
      * Очистить задачу
      */
     public void clear() {
-        points.clear();
+        rectangles.clear();
         solved = false;
     }
 
@@ -256,28 +221,8 @@ public class Task {
     public void solve() {
         // очищаем списки
         crossed.clear();
-        single.clear();
 
-        // перебираем пары точек
-        for (int i = 0; i < points.size(); i++) {
-            for (int j = i + 1; j < points.size(); j++) {
-                // сохраняем точки
-                Point a = points.get(i);
-                Point b = points.get(j);
-                // если точки совпадают по положению
-                if (a.pos.equals(b.pos) && !a.pointSet.equals(b.pointSet)) {
-                    if (!crossed.contains(a)) {
-                        crossed.add(a);
-                        crossed.add(b);
-                    }
-                }
-            }
-        }
-
-        /// добавляем вс
-        for (Point point : points)
-            if (!crossed.contains(point))
-                single.add(point);
+        //
 
         // задача решена
         solved = true;
@@ -297,8 +242,8 @@ public class Task {
      *
      * @return название мира
      */
-    public ArrayList<Point> getPoints() {
-        return points;
+    public ArrayList<Rectangle> getPoints() {
+        return rectangles;
     }
 
     /**
@@ -307,19 +252,10 @@ public class Task {
      * @return список пересечений
      */
     @JsonIgnore
-    public ArrayList<Point> getCrossed() {
+    public ArrayList<Rectangle> getCrossed() {
         return crossed;
     }
 
-    /**
-     * Получить список разности
-     *
-     * @return список разности
-     */
-    @JsonIgnore
-    public ArrayList<Point> getSingle() {
-        return single;
-    }
 
     /**
      * Отмена решения задачи
@@ -391,17 +327,5 @@ public class Task {
         }
     }
 
-    /**
-     * Добавить параллельный прямоугольник
-     *
-     * @param pos1      положение первой точки
-     * @param pos2      положение второй точки
-     * @param pointSet1 множество
-     * @param pointSet2 множество
-     */
-    public void addParallelRectangle(Vector2d pos1, Point.PointSet pointSet1, Vector2d pos2, Point.PointSet pointSet2) {
-        Point newPoint1 = new Point(pos1, pointSet1);
-        Point newPoint2 = new Point(pos2, pointSet2);
-        points.add(newPoint1);
-    }
+
 }

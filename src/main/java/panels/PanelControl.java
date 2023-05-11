@@ -1,6 +1,7 @@
 package panels;
 
 import app.Point;
+import app.Rectangle;
 import app.Task;
 import controls.*;
 import dialogs.PanelInfo;
@@ -115,11 +116,12 @@ public class PanelControl extends GridPanel {
                 PanelLog.warning("X2 координата введена неверно");
             } else if (!y2Field.hasValidDoubleValue())
                 PanelLog.warning("Y2 координата введена неверно");
-            else
-                PanelRendering.task.addPoint(
-                    new Vector2d(x1Field.doubleValue(), y1Field.doubleValue()), Point.PointSet.FIRST_SET // !!!
-                );
-        });
+            else {
+                Vector2d posA = new Vector2d(x1Field.doubleValue(), y1Field.doubleValue());
+                Vector2d posB = new Vector2d(x2Field.doubleValue(), y2Field.doubleValue());
+                PanelRendering.task.addRectangle(posA, posB, Rectangle.RectangleSet.FIRST_SET);
+            }
+            });
         buttons.add(addToFirstSet);
 
         Button addToSecondSet = new Button(
@@ -137,9 +139,9 @@ public class PanelControl extends GridPanel {
             } else if (!y2Field.hasValidDoubleValue())
                 PanelLog.warning("Y2 координата введена неверно");
             else {
-                PanelRendering.task.addPoint(
-                        new Vector2d(x1Field.doubleValue(), y1Field.doubleValue()), Point.PointSet.SECOND_SET // !!!
-                );
+                Vector2d posA = new Vector2d(x1Field.doubleValue(), y1Field.doubleValue());
+                Vector2d posB = new Vector2d(x2Field.doubleValue(), y2Field.doubleValue());
+                PanelRendering.task.addRectangle(posA, posB, Rectangle.RectangleSet.SECOND_SET);
             }
         });
         buttons.add(addToSecondSet);
@@ -163,7 +165,7 @@ public class PanelControl extends GridPanel {
             if (!cntField.hasValidIntValue()) {
                 PanelLog.warning("кол-во точек указано неверно");
             } else
-                PanelRendering.task.addRandomPoints(cntField.intValue());
+                PanelRendering.task.addRandomRectangles(cntField.intValue());
         });
         buttons.add(addPoints);
 
@@ -200,8 +202,7 @@ public class PanelControl extends GridPanel {
             if (!PanelRendering.task.isSolved()) {
                 PanelRendering.task.solve();
                 String s = "Задача решена\n" +
-                        "Пересечений: " + PanelRendering.task.getCrossed().size() / 2 + "\n" +
-                        "Отдельных точек: " + PanelRendering.task.getSingle().size();
+                        "Пересечений: " + PanelRendering.task.getCrossed().size() / 2 + "\n";
 
                 PanelInfo.show(s + "\n\nНажмите Esc, чтобы вернуться");
                 PanelLog.success(s);
